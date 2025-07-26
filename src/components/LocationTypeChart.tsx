@@ -2,22 +2,22 @@
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 
-const COLORS = ['#0088FE', '#FF69B4', '#00C49F', '#FFBB28'];
+const COLORS = ['#FF8042', '#00C49F'];
 
-interface GenderChartProps {
-  data: { gender: string; count: number }[];
+interface LocationTypeChartProps {
+  data: { type: string; count: number }[];
 }
 
-export default function GenderChart({ data }: GenderChartProps) {
+export default function LocationTypeChart({ data }: LocationTypeChartProps) {
   return (
     <div className="p-4 border rounded-2xl shadow">
-      <h2 className="text-lg font-semibold mb-4">Distribusi Gender</h2>
+      <h2 className="text-lg font-semibold mb-4">Tipe Lokasi</h2>
       <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
             data={data}
             dataKey="count"
-            nameKey="gender"
+            nameKey="type"
             cx="50%"
             cy="50%"
             outerRadius={100}
