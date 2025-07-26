@@ -10,12 +10,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Input } from '@/components/ui/input'; // pastikan kamu punya komponen ini
+import { Input } from '@/components/ui/input';
 
 export default function DataTable({ data }: { data: HigoData[] }) {
   const [searchTerm, setSearchTerm] = useState('');
 
-  function formatHour(hour: string): string {
+  function formatHour(hour?: string): string {
+    if (!hour || typeof hour !== 'string' || !hour.includes(':')) {
+      return 'Unknown';
+    }
+
     const [h, m] = hour.split(':').map(Number);
     const period = h >= 12 ? 'PM' : 'AM';
     const formattedHour = (h % 12 || 12).toString().padStart(2, '0');
