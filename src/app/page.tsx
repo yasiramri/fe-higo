@@ -50,7 +50,7 @@ export default function HomePage() {
           API disediakan dalam format JSON dan dapat diakses dalam waktu kurang
           dari 30 detik. Dokumentasi lengkap tersedia melalui{' '}
           <a
-            href="https://be-higo-production.up.railway.app/api-docs"
+            href="https://be-higo-production.up.railway.app/docs"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 underline"
