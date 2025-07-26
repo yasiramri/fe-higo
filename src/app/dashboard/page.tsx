@@ -58,9 +58,13 @@ export default async function DashboardPage() {
   // LOGIN HOUR STATS (di-binning per jam bulat)
   const hourStats = Object.entries(
     dataset.reduce((acc: Record<string, number>, item) => {
-      const hour = item.Login_Hour
-        ? item.Login_Hour.split(':')[0] + ':00'
-        : 'Unknown';
+      const loginHour = item.Login_Hour;
+      if (typeof loginHour !== 'string' || !loginHour.includes(':')) {
+        acc['Unknown'] = (acc['Unknown'] || 0) + 1;
+        return acc;
+      }
+
+      const hour = loginHour.split(':')[0] + ':00';
       acc[hour] = (acc[hour] || 0) + 1;
       return acc;
     }, {})
