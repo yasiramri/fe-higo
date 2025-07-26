@@ -13,7 +13,6 @@ import BirthYearChart from '@/components/BirthYearChart';
 export default async function DashboardPage() {
   const res = await api.get('/higo');
   const dataset: HigoData[] = res.data?.data?.data ?? [];
-  console.log('DATA SET: ', dataset);
 
   // AGE STATS
   function getAgeRange(age: number): string {
@@ -59,7 +58,9 @@ export default async function DashboardPage() {
   // LOGIN HOUR STATS (di-binning per jam bulat)
   const hourStats = Object.entries(
     dataset.reduce((acc: Record<string, number>, item) => {
-      const hour = item.Login_Hour.split(':')[0] + ':00';
+      const hour = item.Login_Hour
+        ? item.Login_Hour.split(':')[0] + ':00'
+        : 'Unknown';
       acc[hour] = (acc[hour] || 0) + 1;
       return acc;
     }, {})
