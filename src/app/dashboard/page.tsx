@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { HigoData } from '@/types/higo';
 import api from '@/lib/api';
 
@@ -9,12 +12,21 @@ import BrandDeviceChart from '@/components/BrandDeviceChart';
 import LoginHourChart from '@/components/LoginHourChart';
 import LocationTypeChart from '@/components/LocationTypeChart';
 import BirthYearChart from '@/components/BirthYearChart';
+import CreateUserModal from '@/components/CreateUserModal';
+import { Button } from '@/components/ui/button';
 
-export default async function DashboardPage() {
-  const res = await api.get('/higo');
-  const dataset: HigoData[] = res.data?.data?.data ?? [];
+export default function DashboardPage() {
+  const [dataset, setDataset] = useState<HigoData[]>([]);
+  const [openModal, setOpenModal] = useState(false);
 
-  // AGE STATS
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await api.get('/higo');
+      setDataset(res.data?.data?.data ?? []);
+    };
+    fetchData();
+  }, [openModal]); // refresh setelah modal ditutup (submit data)
+
   function getAgeRange(age: number): string {
     if (age < 20) return '0-19';
     if (age < 30) return '20-29';
@@ -23,6 +35,7 @@ export default async function DashboardPage() {
     return '50+';
   }
 
+  // AGE STATS
   const ageStats = Object.entries(
     dataset.reduce((acc: Record<string, number>, item) => {
       const range = getAgeRange(item.Age);
@@ -34,12 +47,15 @@ export default async function DashboardPage() {
   // GENDER STATS
   const genderStats = Object.entries(
     dataset.reduce((acc: Record<string, number>, item) => {
-      acc[item.gender] = (acc[item.gender] || 0) + 1;
+      const gender = item.gender.trim().toLowerCase(); // normalize
+      const formattedGender =
+        gender === 'male' ? 'Male' : gender === 'female' ? 'Female' : 'Other';
+      acc[formattedGender] = (acc[formattedGender] || 0) + 1;
       return acc;
     }, {})
   ).map(([gender, count]) => ({ gender, count }));
 
-  // DIGITAL INTEREST STATS
+  // INTEREST STATS
   const interestStats = Object.entries(
     dataset.reduce((acc: Record<string, number>, item) => {
       acc[item.Digital_Interest] = (acc[item.Digital_Interest] || 0) + 1;
@@ -47,7 +63,7 @@ export default async function DashboardPage() {
     }, {})
   ).map(([interest, count]) => ({ interest, count }));
 
-  // BRAND DEVICE STATS
+  // BRANS STATS
   const brandStats = Object.entries(
     dataset.reduce((acc: Record<string, number>, item) => {
       acc[item.Brand_Device] = (acc[item.Brand_Device] || 0) + 1;
@@ -55,12 +71,10 @@ export default async function DashboardPage() {
     }, {})
   ).map(([brand, count]) => ({ brand, count }));
 
-  // LOGIN HOUR STATS (di-binning per jam bulat)
+  // HOUT STATS
   const hourStats = Object.entries(
     dataset.reduce((acc: Record<string, number>, item) => {
       const raw = item.Login_Hour;
-
-      // Validasi data: harus string panjang minimal 2 karakter dan karakter ke-2 harus angka
       if (
         typeof raw !== 'string' ||
         raw.length < 2 ||
@@ -69,14 +83,13 @@ export default async function DashboardPage() {
         acc['Unknown'] = (acc['Unknown'] || 0) + 1;
         return acc;
       }
-
       const hour = raw.slice(0, 2).padStart(2, '0') + ':00';
       acc[hour] = (acc[hour] || 0) + 1;
       return acc;
     }, {})
   ).map(([hour, count]) => ({ hour, count }));
 
-  // LOCATION TYPE STATS
+  // LOCATION STATS
   const locationStats = Object.entries(
     dataset.reduce((acc: Record<string, number>, item) => {
       acc[item.Location_Type] = (acc[item.Location_Type] || 0) + 1;
@@ -84,7 +97,7 @@ export default async function DashboardPage() {
     }, {})
   ).map(([type, count]) => ({ type, count }));
 
-  // BIRTH YEAR STATS by DECADE
+  // BIRTH STATS
   const birthStats = Object.entries(
     dataset.reduce((acc: Record<string, number>, item) => {
       const decade = `${Math.floor(item.BirthYear / 10) * 10}s`;
@@ -95,6 +108,13 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-10 p-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <Button onClick={() => setOpenModal(true)}>Tambah Data</Button>
+      </div>
+
+      <CreateUserModal open={openModal} onClose={() => setOpenModal(false)} />
+
       <div className="grid md:grid-cols-2 gap-6">
         <GenderChart data={genderStats} />
         <AgeChart data={ageStats} />

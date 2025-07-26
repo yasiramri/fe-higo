@@ -1,5 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSideBar';
+import { Toaster } from 'sonner'; // ⬅️ Tambahkan ini
 import './globals.css';
 
 export const metadata = {
@@ -32,6 +33,8 @@ export default function RootLayout({
             </div>
           </div>
         </SidebarProvider>
+
+        <Toaster richColors position="top-center" />
       </body>
     </html>
   );
