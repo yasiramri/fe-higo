@@ -60,13 +60,17 @@ export default async function DashboardPage() {
     dataset.reduce((acc: Record<string, number>, item) => {
       const raw = item.Login_Hour;
 
-      if (typeof raw !== 'string' || !raw.includes(':')) {
+      // Validasi data: harus string panjang minimal 2 karakter dan karakter ke-2 harus angka
+      if (
+        typeof raw !== 'string' ||
+        raw.length < 2 ||
+        isNaN(Number(raw.slice(0, 2)))
+      ) {
         acc['Unknown'] = (acc['Unknown'] || 0) + 1;
         return acc;
       }
 
-      const hourPart = raw.split(':')[0]?.padStart(2, '0');
-      const hour = `${hourPart}:00`;
+      const hour = raw.slice(0, 2).padStart(2, '0') + ':00';
       acc[hour] = (acc[hour] || 0) + 1;
       return acc;
     }, {})
