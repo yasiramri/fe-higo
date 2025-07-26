@@ -4,7 +4,13 @@ export interface HigoData {
   Age: number;
   gender: string;
   Email: string;
-  Digital_Interest: string;
-  Location_Type: string;
   Number: number;
+  No_Telp: string;
+  Location_Type: string;
+  Digital_Interest: string;
+  Name_of_Location: string;
+  Date: string;
+  Login_Hour: string;
+  BirthYear: number;
+  Brand_Device: string;
 }
